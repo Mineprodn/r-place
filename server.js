@@ -1,49 +1,36 @@
+// server.js (Node.js mit Express und Socket.IO)
+
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
-const fs = require('fs');
-const path = require('path');
+const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*"
-  }
-});
+const io = socketIo(server);
 
-const PORT = process.env.PORT || 3000;
-
-let pixels = {};
-const FILE = 'pixels.json';
-
-if (fs.existsSync(FILE)) {
-  pixels = JSON.parse(fs.readFileSync(FILE));
-}
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('/api/board', (req, res) => {
-  res.json(pixels);
-});
+const pixels = {}; // { "x,y": color }
 
 io.on('connection', (socket) => {
-  console.log('🔌 Ein Benutzer ist verbunden');
+  console.log('Client connected');
 
-  socket.emit('init', pixels);
+  // Alle Pixel senden, wenn ein neuer Client kommt
+  socket.emit('load_pixels', pixels);
 
+  // Wenn ein Pixel gesetzt wird
   socket.on('place_pixel', ({ x, y, color }) => {
     const key = `${x},${y}`;
     pixels[key] = color;
-    fs.writeFileSync(FILE, JSON.stringify(pixels));
+
+    // An alle Clients senden (inklusive Sender)
     io.emit('update_pixel', { x, y, color });
   });
 
   socket.on('disconnect', () => {
-    console.log('🚪 Verbindung getrennt');
+    console.log('Client disconnected');
   });
 });
 
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server läuft auf Port ${PORT}`);
+  console.log(`Server läuft auf Port ${PORT}`);
 });
