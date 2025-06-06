@@ -2,46 +2,50 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Mini r/place mit Farbrad</title>
+  <title>r/place mit Speicherung</title>
   <style>
-    canvas {
-      border: 1px solid #000;
-      margin-top: 10px;
-    }
-    #colorPicker {
-      margin-top: 10px;
-    }
+    canvas { border: 1px solid black; }
   </style>
 </head>
 <body>
-  <h1>Mini r/place</h1>
-  <label for="colorPicker">Wähle eine Farbe:</label>
   <input type="color" id="colorPicker" value="#000000">
-
-  <canvas id="board" width="100" height="100"></canvas>
+  <canvas id="board" width="1000" height="1000"></canvas>
 
   <script>
     const canvas = document.getElementById('board');
     const ctx = canvas.getContext('2d');
-    const colorPicker = document.getElementById('colorPicker');
     const scale = 10;
-    let selectedColor = colorPicker.value;
+    const colorPicker = document.getElementById('colorPicker');
+    let color = colorPicker.value;
 
-    // Vergrößere die Canvas-Fläche
-    canvas.width = 149 * scale;
-    canvas.height = 75 * scale;
-
-    // Setze neue Farbe, wenn Benutzer sie auswählt
     colorPicker.addEventListener('input', () => {
-      selectedColor = colorPicker.value;
+      color = colorPicker.value;
     });
 
-    // Zeichne Pixel beim Klick
-    canvas.addEventListener('click', e => {
+    // Lade gespeicherte Pixel vom Server
+    fetch('/api/board')
+      .then(res => res.json())
+      .then(data => {
+        for (const key in data) {
+          const [x, y] = key.split(',').map(Number);
+          ctx.fillStyle = data[key];
+          ctx.fillRect(x * scale, y * scale, scale, scale);
+        }
+      });
+
+    canvas.addEventListener('click', (e) => {
       const x = Math.floor(e.offsetX / scale);
       const y = Math.floor(e.offsetY / scale);
-      ctx.fillStyle = selectedColor;
+
+      ctx.fillStyle = color;
       ctx.fillRect(x * scale, y * scale, scale, scale);
+
+      // Pixel an Server senden
+      fetch('/api/pixel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ x, y, color })
+      });
     });
   </script>
 </body>
