@@ -5,11 +5,11 @@ const ctx = canvas.getContext('2d');
 const colorPicker = document.getElementById('colorPicker');
 
 let scale = 10;
-let gridWidth = canvas.width / scale;   // Anzahl Pixel horizontal
-let gridHeight = canvas.height / scale; // Anzahl Pixel vertikal
+let gridWidth = canvas.width / scale;
+let gridHeight = canvas.height / scale;
 
 let color = colorPicker.value;
-let pixelData = {}; // Speicher für alle Pixel: key = "x,y", value = color
+let pixelData = {}; // key = "x,y", value = color
 
 colorPicker.addEventListener('input', () => {
   color = colorPicker.value;
@@ -21,7 +21,6 @@ function drawPixel(x, y, color) {
   pixelData[`${x},${y}`] = color;
 }
 
-// Canvas neu zeichnen aus pixelData (z.B. nach Resize)
 function redrawPixels() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (const key in pixelData) {
@@ -32,21 +31,40 @@ function redrawPixels() {
   }
 }
 
-// Pixel setzen und an Server senden
 function placePixel(x, y) {
-  if (x >= gridWidth || y >= gridHeight) return; // außerhalb des Canvas
+  if (x < 0 || y < 0 || x >= gridWidth || y >= gridHeight) return;
   socket.emit('place_pixel', { x, y, color });
 }
 
-canvas.addEventListener('click', (e) => {
+// Zeichnen mit Klick & Ziehen
+let drawing = false;
+
+canvas.addEventListener('mousedown', (e) => {
+  drawing = true;
+  const x = Math.floor(e.offsetX / scale);
+  const y = Math.floor(e.offsetY / scale);
+  placePixel(x, y);
+});
+
+canvas.addEventListener('mouseup', () => {
+  drawing = false;
+});
+
+canvas.addEventListener('mouseleave', () => {
+  drawing = false;
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!drawing) return;
   const x = Math.floor(e.offsetX / scale);
   const y = Math.floor(e.offsetY / scale);
   placePixel(x, y);
 });
 
 // Socket Events
+
 socket.on('update_pixel', ({ x, y, color }) => {
-  if (x >= gridWidth || y >= gridHeight) return; // außerhalb neuer Größe ignorieren
+  if (x < 0 || y < 0 || x >= gridWidth || y >= gridHeight) return;
   drawPixel(x, y, color);
 });
 
@@ -55,32 +73,54 @@ socket.on('load_pixels', (pixels) => {
   redrawPixels();
 });
 
-// *** Neues Feature: Menü für Canvas-Größe ***
+// Menü für Canvas-Größe
+
+const resizeMenu = document.getElementById('resizeMenu');
+const overlay = document.getElementById('overlay');
+const inputWidth = document.getElementById('inputWidth');
+const inputHeight = document.getElementById('inputHeight');
+const btnApply = document.getElementById('btnApply');
+const btnCancel = document.getElementById('btnCancel');
 
 function openResizeMenu() {
-  const newSize = prompt(
-    `Aktuelle Größe: ${gridWidth} x ${gridHeight} Pixel\n` +
-    `Gib die neue Breite (in Pixeln) ein:`,
-    gridWidth
-  );
-  
-  if (!newSize) return; // Abbruch
-  
-  const newWidth = parseInt(newSize);
-  if (isNaN(newWidth) || newWidth <= 0) {
-    alert("Ungültige Eingabe!");
-    return;
-  }
-  
-  // Canvas breiter machen, Höhe bleibt gleich (optional anpassbar)
-  gridWidth = newWidth;
-  canvas.width = gridWidth * scale;
-  
-  // Neu zeichnen ohne Pixelverlust
-  redrawPixels();
+  inputWidth.value = gridWidth;
+  inputHeight.value = gridHeight;
+  resizeMenu.style.display = 'block';
+  overlay.style.display = 'block';
 }
 
-// Event-Listener für Taste "b"
+function closeResizeMenu() {
+  resizeMenu.style.display = 'none';
+  overlay.style.display = 'none';
+}
+
+btnCancel.addEventListener('click', () => {
+  closeResizeMenu();
+});
+
+btnApply.addEventListener('click', () => {
+  const newWidth = parseInt(inputWidth.value);
+  const newHeight = parseInt(inputHeight.value);
+
+  if (
+    isNaN(newWidth) || newWidth <= 0 ||
+    isNaN(newHeight) || newHeight <= 0
+  ) {
+    alert('Bitte gültige positive Zahlen eingeben!');
+    return;
+  }
+
+  gridWidth = newWidth;
+  gridHeight = newHeight;
+
+  canvas.width = gridWidth * scale;
+  canvas.height = gridHeight * scale;
+
+  redrawPixels();
+  closeResizeMenu();
+});
+
+// Menü mit Taste "b" öffnen
 window.addEventListener('keydown', (e) => {
   if (e.key.toLowerCase() === 'b') {
     openResizeMenu();
