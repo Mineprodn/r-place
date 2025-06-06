@@ -4,8 +4,8 @@ const colorPicker = document.getElementById('colorPicker');
 const scale = 10;
 let color = colorPicker.value;
 
-canvas.width = 500 * scale;
-canvas.height = 500 * scale;
+canvas.width = 250 * scale;
+canvas.height = 250 * scale;
 
 // RICHTIG FÜR RENDER: Ohne hostnamen, einfach /
 const socket = io();
