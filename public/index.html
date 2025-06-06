@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pixel Canvas</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Canvas</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <h2>Pixel Canvas</h2>
-<p>Wähle eine Farbe:</p>
+<p>Farbe wählen:</p>
 <input type="color" id="colorPicker" value="#ff0000" />
 
 <canvas id="board" width="1000" height="1000"></canvas>
@@ -17,18 +17,17 @@
 <!-- Overlay und Menü -->
 <div id="overlay"></div>
 <div id="resizeMenu">
-  <label for="inputWidth">Neue Breite (Pixel):</label>
+  <label for="inputWidth">Neue Breite (in Pixeln):</label>
   <input type="number" id="inputWidth" min="1" max="5000" />
-  
-  <label for="inputHeight">Neue Höhe (Pixel):</label>
+
+  <label for="inputHeight">Neue Höhe (in Pixeln):</label>
   <input type="number" id="inputHeight" min="1" max="5000" />
-  
+
   <button id="btnApply">Anwenden</button>
   <button id="btnCancel">Abbrechen</button>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="script.js"></script>
-
 </body>
 </html>
