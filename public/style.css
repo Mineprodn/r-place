@@ -1,0 +1,71 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 10px;
+  background: #f0f0f0;
+  user-select: none;
+}
+
+h2 {
+  margin-bottom: 5px;
+}
+
+#board {
+  border: 1px solid black;
+  display: block;
+  margin-top: 10px;
+  cursor: crosshair;
+}
+
+#colorPicker {
+  margin-top: 10px;
+  width: 60px;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Menü für Canvas-Größenänderung */
+#resizeMenu {
+  display: none;
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 20px 30px;
+  border: 2px solid black;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  z-index: 1000;
+  border-radius: 6px;
+  width: 250px;
+  font-size: 16px;
+}
+
+#resizeMenu label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+#resizeMenu input[type=number] {
+  width: 100%;
+  padding: 6px 8px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+#resizeMenu button {
+  padding: 8px 15px;
+  margin-right: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#overlay {
+  display: none;
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.4);
+  z-index: 900;
+}
