@@ -7,10 +7,8 @@ let color = colorPicker.value;
 canvas.width = 100 * scale;
 canvas.height = 100 * scale;
 
-// Render-sichere WebSocket-Verbindung
-const socket = io("/", {
-  transports: ["websocket"]
-});
+// RICHTIG FÜR RENDER: Ohne hostnamen, einfach /
+const socket = io();
 
 colorPicker.addEventListener('input', () => {
   color = colorPicker.value;
