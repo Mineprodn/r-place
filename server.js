@@ -1,33 +1,35 @@
 const express = require('express');
 const http = require('http');
-const socketIo = require('socket.io');
+const { Server } = require('socket.io');
 const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
-const PORT = 3000;
+const io = new Server(server, {
+  cors: {
+    origin: "*"
+  }
+});
 
-app.use(express.static('public'));
+const PORT = process.env.PORT || 3000;
 
 let pixels = {};
 const FILE = 'pixels.json';
 
-// Load existing pixels
 if (fs.existsSync(FILE)) {
   pixels = JSON.parse(fs.readFileSync(FILE));
 }
 
-// Serve pixel data
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.get('/api/board', (req, res) => {
   res.json(pixels);
 });
 
-// WebSocket connection
 io.on('connection', (socket) => {
-  console.log('Ein Benutzer ist verbunden');
+  console.log('🔌 Ein Benutzer ist verbunden');
 
-  // Send initial pixel data
   socket.emit('init', pixels);
 
   socket.on('place_pixel', ({ x, y, color }) => {
@@ -38,10 +40,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('Ein Benutzer hat die Verbindung getrennt');
+    console.log('🚪 Verbindung getrennt');
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`Server läuft auf http://localhost:${PORT}`);
+  console.log(`🚀 Server läuft auf Port ${PORT}`);
 });
