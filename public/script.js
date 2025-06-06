@@ -102,13 +102,21 @@ btnApply.addEventListener('click', () => {
     return;
   }
 
+  // Canvasgröße anpassen
+  const oldGridWidth = gridWidth;
+  const oldGridHeight = gridHeight;
+
   gridWidth = newWidth;
   gridHeight = newHeight;
 
+  // Canvas Pixelmaße setzen
   canvas.width = gridWidth * scale;
   canvas.height = gridHeight * scale;
 
+  // Pixeldaten beibehalten
+  // Alle Pixel, die jetzt noch im neuen Bereich sind, zeichnen
   redrawPixels();
+
   closeResizeMenu();
 });
 
