@@ -3,6 +3,7 @@ const socket = io();
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
 const colorPicker = document.getElementById('colorPicker');
+const userCountDiv = document.getElementById('userCount');
 
 let scale = 10;
 let gridWidth = canvas.width / scale;
@@ -65,6 +66,12 @@ socket.on('load_pixels', pixels => {
   redrawPixels();
 });
 
+// USER COUNT
+
+socket.on('user_count', count => {
+  userCountDiv.textContent = `Verbunden: ${count} Nutzer`;
+});
+
 // Menü für Canvas-Größe
 
 const resizeMenu = document.getElementById('resizeMenu');
@@ -113,8 +120,7 @@ btnApply.addEventListener('click', () => {
   canvas.width = gridWidth * scale;
   canvas.height = gridHeight * scale;
 
-  // Pixeldaten beibehalten
-  // Alle Pixel, die jetzt noch im neuen Bereich sind, zeichnen
+  // Pixeldaten beibehalten (Pixel außerhalb neuer Größe werden ignoriert)
   redrawPixels();
 
   closeResizeMenu();
