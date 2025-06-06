@@ -65,18 +65,56 @@ socket.on('load_pixels', pixels => {
   redrawPixels();
 });
 
-// Resize Menü (einfach gehalten)
+// Menü für Canvas-Größe
 
-window.addEventListener('keydown', e => {
+const resizeMenu = document.getElementById('resizeMenu');
+const overlay = document.getElementById('overlay');
+const inputWidth = document.getElementById('inputWidth');
+const inputHeight = document.getElementById('inputHeight');
+const btnApply = document.getElementById('btnApply');
+const btnCancel = document.getElementById('btnCancel');
+
+function openResizeMenu() {
+  inputWidth.value = gridWidth;
+  inputHeight.value = gridHeight;
+  resizeMenu.style.display = 'block';
+  overlay.style.display = 'block';
+}
+
+function closeResizeMenu() {
+  resizeMenu.style.display = 'none';
+  overlay.style.display = 'none';
+}
+
+btnCancel.addEventListener('click', () => {
+  closeResizeMenu();
+});
+
+btnApply.addEventListener('click', () => {
+  const newWidth = parseInt(inputWidth.value);
+  const newHeight = parseInt(inputHeight.value);
+
+  if (
+    isNaN(newWidth) || newWidth <= 0 ||
+    isNaN(newHeight) || newHeight <= 0
+  ) {
+    alert('Bitte gültige positive Zahlen eingeben!');
+    return;
+  }
+
+  gridWidth = newWidth;
+  gridHeight = newHeight;
+
+  canvas.width = gridWidth * scale;
+  canvas.height = gridHeight * scale;
+
+  redrawPixels();
+  closeResizeMenu();
+});
+
+// Menü mit Taste "b" öffnen
+window.addEventListener('keydown', (e) => {
   if (e.key.toLowerCase() === 'b') {
-    const newWidth = parseInt(prompt("Neue Breite in Pixeln:", gridWidth));
-    const newHeight = parseInt(prompt("Neue Höhe in Pixeln:", gridHeight));
-    if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
-      gridWidth = newWidth;
-      gridHeight = newHeight;
-      canvas.width = gridWidth * scale;
-      canvas.height = gridHeight * scale;
-      redrawPixels();
-    }
+    openResizeMenu();
   }
 });
