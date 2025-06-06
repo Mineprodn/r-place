@@ -1,20 +1,34 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>Live r/place</title>
-  <style>
-    canvas { border: 1px solid black; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pixel Canvas</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Live r/place</h1>
-  <input type="color" id="colorPicker" value="#000000" />
-  <canvas id="board" width="2000" height= "1000"></canvas>
 
-  <!-- Socket.IO Client Bibliothek -->
-  <script src="/socket.io/socket.io.js"></script>
-  <!-- Dein eigenes Skript -->
-  <script src="script.js"></script>
+<h2>Pixel Canvas</h2>
+<p>Wähle eine Farbe:</p>
+<input type="color" id="colorPicker" value="#ff0000" />
+
+<canvas id="board" width="1000" height="1000"></canvas>
+
+<!-- Overlay und Menü -->
+<div id="overlay"></div>
+<div id="resizeMenu">
+  <label for="inputWidth">Neue Breite (Pixel):</label>
+  <input type="number" id="inputWidth" min="1" max="5000" />
+  
+  <label for="inputHeight">Neue Höhe (Pixel):</label>
+  <input type="number" id="inputHeight" min="1" max="5000" />
+  
+  <button id="btnApply">Anwenden</button>
+  <button id="btnCancel">Abbrechen</button>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="script.js"></script>
+
 </body>
 </html>
