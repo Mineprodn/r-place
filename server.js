@@ -1,36 +1,31 @@
-// server.js (Node.js mit Express und Socket.IO)
-
 const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-
 const app = express();
+const http = require('http');
 const server = http.createServer(app);
-const io = socketIo(server);
+const { Server } = require('socket.io');
+const io = new Server(server);
 
-const pixels = {}; // { "x,y": color }
+app.use(express.static('public'));
 
+const pixels = {}; // Format: {"x,y": color}
+
+// Beim neuen Client alle Pixel senden
 io.on('connection', (socket) => {
-  console.log('Client connected');
-
-  // Alle Pixel senden, wenn ein neuer Client kommt
+  console.log('Client verbunden');
   socket.emit('load_pixels', pixels);
 
-  // Wenn ein Pixel gesetzt wird
   socket.on('place_pixel', ({ x, y, color }) => {
     const key = `${x},${y}`;
     pixels[key] = color;
-
-    // An alle Clients senden (inklusive Sender)
     io.emit('update_pixel', { x, y, color });
   });
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+    console.log('Client getrennt');
   });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
+  console.log(`Server läuft auf http://localhost:${PORT}`);
 });
