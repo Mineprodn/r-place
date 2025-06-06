@@ -1,17 +1,12 @@
-const express = require('express');
-const app = express();
-const http = require('http');
-const server = http.createServer(app);
-const { Server } = require('socket.io');
-const io = new Server(server);
+// ... dein bestehender Code oben
 
-app.use(express.static('public'));
+let connectedUsers = 0;
 
-const pixels = {}; // Format: {"x,y": color}
-
-// Beim neuen Client alle Pixel senden
 io.on('connection', (socket) => {
-  console.log('Client verbunden');
+  connectedUsers++;
+  io.emit('user_count', connectedUsers);
+  console.log(`Client verbunden - Nutzer: ${connectedUsers}`);
+
   socket.emit('load_pixels', pixels);
 
   socket.on('place_pixel', ({ x, y, color }) => {
@@ -21,11 +16,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('Client getrennt');
+    connectedUsers--;
+    io.emit('user_count', connectedUsers);
+    console.log(`Client getrennt - Nutzer: ${connectedUsers}`);
   });
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server läuft auf http://localhost:${PORT}`);
 });
