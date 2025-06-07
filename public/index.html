@@ -4,18 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pixel Canvas</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Pixel Canvas</h1>
-  <div id="info"><span id="userCount">0</span> Person(en) online</div>
+
+  <div id="info">
+    <span id="userCount">0</span> Person(en) online
+  </div>
+
   <canvas id="canvas"></canvas>
-  <div id="menu" style="display:none;">
+
+  <div id="menu" style="display: none;">
     <label>Breite: <input type="number" id="widthInput" value="100" /></label>
     <label>Höhe: <input type="number" id="heightInput" value="100" /></label>
     <button id="resizeBtn">Canvas Größe ändern</button>
   </div>
-  <input type="color" id="colorPicker" />
+
+  <input type="color" id="colorPicker" value="#000000" />
+
+  <!-- WICHTIG: socket.io MUSS vor script.js geladen werden -->
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>
