@@ -1,50 +1,43 @@
-const express = require("express");
-const app = express();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http);
-const fs = require("fs");
+const socket = io(); // Socket.IO client-Verbindung
 
-let pixels = {};
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const pixelSize = 10;
+
 let gridWidth = 100;
 let gridHeight = 100;
+let pixels = {};
 
-try {
-  const saved = JSON.parse(fs.readFileSync("canvas_data.json"));
-  pixels = saved.pixels || {};
-  gridWidth = saved.width || 100;
-  gridHeight = saved.height || 100;
-} catch (e) {}
-
-app.use(express.static("public"));
-
-io.on("connection", (socket) => {
-  io.emit("user_count", io.engine.clientsCount);
-  socket.emit("init", { pixels, gridWidth, gridHeight });
-
-  socket.on("place_pixel", ({ x, y, color }) => {
-    pixels[`${x},${y}`] = color;
-    io.emit("update_pixel", { x, y, color });
-    save();
-  });
-
-  socket.on("resize_canvas", ({ width, height }) => {
-    gridWidth = width;
-    gridHeight = height;
-    io.emit("canvas_resized", { width, height });
-    save();
-  });
-
-  socket.on("disconnect", () => {
-    io.emit("user_count", io.engine.clientsCount);
-  });
-});
-
-function save() {
-  fs.writeFileSync("canvas_data.json", JSON.stringify({
-    pixels, width: gridWidth, height: gridHeight
-  }));
+function drawPixel(x, y, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 }
 
-http.listen(3000, () => {
-  console.log("Server läuft auf http://localhost:3000");
+socket.on('init', (data) => {
+  pixels = data.pixels || {};
+  gridWidth = data.gridWidth || 100;
+  gridHeight = data.gridHeight || 100;
+
+  canvas.width = gridWidth * pixelSize;
+  canvas.height = gridHeight * pixelSize;
+
+  for (const key in pixels) {
+    const [x, y] = key.split(',').map(Number);
+    drawPixel(x, y, pixels[key]);
+  }
+});
+
+canvas.addEventListener('click', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const x = Math.floor((e.clientX - rect.left) / pixelSize);
+  const y = Math.floor((e.clientY - rect.top) / pixelSize);
+
+  const color = '#000000'; // z.B. feste Farbe oder von Colorpicker
+
+  socket.emit('place_pixel', { x, y, color });
+});
+
+socket.on('update_pixel', ({ x, y, color }) => {
+  pixels[`${x},${y}`] = color;
+  drawPixel(x, y, color);
 });
