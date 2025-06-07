@@ -1,0 +1,64 @@
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+#userCount {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
+  user-select: none;
+}
+
+canvas {
+  border: 1px solid #000;
+  display: block;
+  margin-bottom: 20px;
+}
+
+#resizeMenu {
+  display: none;
+  position: fixed;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 30px 40px;
+  border: 3px solid black;
+  box-shadow: 0 0 15px rgba(0,0,0,0.4);
+  z-index: 1000;
+  border-radius: 8px;
+  width: 320px;
+  font-size: 18px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+#resizeMenu h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+#resizeMenu label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+#resizeMenu input[type=number] {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 20px;
+  font-size: 18px;
+  box-sizing: border-box;
+}
+
+#resizeMenu button {
+  padding: 10px 20px;
+  margin-right: 15px;
+  font-size: 18px;
+  cursor: pointer;
+}
