@@ -49,13 +49,21 @@
       font-weight: bold;
       z-index: 100;
     }
+
+    #colorPicker {
+      position: fixed;
+      top: 10px;
+      left: 200px;
+      z-index: 100;
+    }
   </style>
 </head>
 <body>
 
   <canvas id="canvas"></canvas>
 
-  <!-- Resize-Menü -->
+  <input type="color" id="colorPicker" value="#000000">
+
   <div id="resizeMenu">
     <label>
       Breite:
@@ -70,12 +78,9 @@
     <button id="applyResize">Anwenden</button>
   </div>
 
-  <!-- Benutzerzähler -->
   <div id="userCount">👥 0 Nutzer online</div>
 
-  <!-- Socket.IO Client laden -->
   <script src="/socket.io/socket.io.js"></script>
-  <!-- Dein Skript -->
   <script src="script.js"></script>
 </body>
 </html>
