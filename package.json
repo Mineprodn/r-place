@@ -1,0 +1,13 @@
+{
+  "name": "live-canvas",
+  "version": "1.0.0",
+  "description": "Collaborative pixel canvas like r/place",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
+  }
+}
