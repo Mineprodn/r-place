@@ -1,4 +1,10 @@
-const socket = io();
+let socket;
+let isAuthenticated = false;
+
+const password = prompt("Bitte gib das Passwort ein:");
+
+socket = io();
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const colorPicker = document.getElementById("colorPicker");
@@ -19,7 +25,10 @@ function resizeCanvas() {
   canvas.height = gridHeight * pixelSize;
 }
 
-socket.on("init", ({ pixels, gridWidth: gw, gridHeight: gh }) => {
+socket.emit("authenticate", password);
+
+socket.on("auth_success", ({ pixels, gridWidth: gw, gridHeight: gh }) => {
+  isAuthenticated = true;
   gridWidth = gw;
   gridHeight = gh;
   resizeCanvas();
@@ -27,6 +36,10 @@ socket.on("init", ({ pixels, gridWidth: gw, gridHeight: gh }) => {
     const [x, y] = key.split(",").map(Number);
     drawPixel(x, y, pixels[key]);
   }
+});
+
+socket.on("auth_failed", () => {
+  alert("Falsches Passwort. Du kannst nur zuschauen.");
 });
 
 socket.on("update_pixel", ({ x, y, color }) => {
@@ -62,6 +75,8 @@ canvas.addEventListener("mousemove", (e) => {
 });
 
 function handleDraw(e) {
+  if (!isAuthenticated) return;
+
   const rect = canvas.getBoundingClientRect();
   const x = Math.floor((e.clientX - rect.left) / pixelSize);
   const y = Math.floor((e.clientY - rect.top) / pixelSize);
@@ -75,6 +90,8 @@ resizeBtn.addEventListener("click", () => {
 });
 
 applyResize.addEventListener("click", () => {
+  if (!isAuthenticated) return;
+
   const newWidth = parseInt(widthInput.value);
   const newHeight = parseInt(heightInput.value);
   if (newWidth > 0 && newHeight > 0) {
